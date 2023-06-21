@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tomcat
+  template:
+    metadata:
+      labels:
+        app: tomcat
+    spec:
+      containers:
+        - name: tomcat
+          image: [Harbor에 저장된 이미지]
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: jsp-files-volume
+              mountPath: /usr/local/tomcat/webapps/
+            - name: context-file-volume
+              mountPath: /usr/local/tomcat/conf/context.xml
+              subPath: context.xml
+            - name: tomcat-server-volume
+              mountPath: /usr/local/tomcat/conf/server.xml
+              subPath: server.xml
+      volumes:
+        - name: jsp-files-volume
+          configMap:
+            name: tomcat-webapp-config
+        - name: context-file-volume
+          configMap:
+            name: tomcat-context-config
+        - name: tomcat-server-volume
+          configMap:
+            name: tomcat-server-config
